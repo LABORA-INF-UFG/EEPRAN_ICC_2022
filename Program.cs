@@ -97,6 +97,7 @@ namespace modelo_william {
 		public static Dictionary<string, IIntVar> X;
 		public static Dictionary<string, uint[]>  Keys;
 		public static IRange                      BottleneckRestriction;
+		public static INumExpr                    BottleneckExpr;
 		public static Dictionary<uint, Route>     Routes;
 		public static Dictionary<uint, Cr>        Crs;
 		public static Dictionary<uint, Drc>       Drcs;
@@ -395,7 +396,7 @@ namespace modelo_william {
 			#region Bottleneck Restriction
 
 			var fsesInCrFunction    = Model.LinearIntExpr();
-			var aggregationFunction = Model.IntExpr();
+			BottleneckExpr = Model.NumExpr();
 
 			foreach (Cr cr in Crs.Values) {
 				if (cr.Id == 0) continue;
@@ -430,11 +431,11 @@ namespace modelo_william {
 						//ceilFunction.AddTerm(decisionVarX, u * m);
 					}
 
-					aggregationFunction = Model.Sum(Model.Sum(Model.Prod(Model.Min(fsesInCrFunction, 1), -1), fsesInCrFunction), aggregationFunction);
+					BottleneckExpr = Model.Sum(Model.Sum(Model.Prod(Model.Min(fsesInCrFunction, 1), -1), fsesInCrFunction), BottleneckExpr);
 				}
 			}
-
-			BottleneckRestriction = Model.AddGe(aggregationFunction, 0.0, "Bottleneck Restriction");
+			
+			BottleneckRestriction = Model.AddGe(BottleneckExpr, 0.0, "Bottleneck Restriction");
 
 			#endregion
 
@@ -565,47 +566,7 @@ namespace modelo_william {
 
 			Model.ExportModel("model.lp");
 		}
-
-		public static double GetBottleneckValue() {
-			var value = 0;
-			foreach (Cr cr in Crs.Values) {
-				if (cr.Id == 0) continue;
-				for (ushort f = 0; f <= 8; ++f) {
-					var fsInCrValue = 0.0;
-
-					foreach (var (stringKey, decisionVarX) in X) {
-						Route route = Routes[Keys[stringKey][0]];
-						Drc   drc   = Drcs[Keys[stringKey][1]];
-
-						// u Indicates if the CR cr is part of the Path route
-						var u = 0;
-						if (route.Seq.Contains(cr.Id)) {
-							u = 1;
-						}
-
-						// m Indicates if CR cr runs de VNF f fom de RU ru according to DRC drc
-						var m = 0;
-						if (cr.Id == route.Seq[0] && drc.FsCu.Contains(f)) {
-							m = 1;
-						} else if (cr.Id == route.Seq[1] && drc.FsDu.Contains(f)) {
-							m = 1;
-						} else if (cr.Id == route.Seq[2] && drc.FsRu.Contains(f)) {
-							m = 1;
-						}
-
-						//if (u == 0 || m == 0) continue;
-
-						fsInCrValue += Model.GetValue(decisionVarX) * u * m;
-					}
-
-					value += Convert.ToInt32(fsInCrValue) -
-					         Convert.ToInt32(Math.Ceiling(fsInCrValue / Fses.Count * Rus.Count));
-				}
-			}
-
-			return value;
-		}
-
+		
 		public static void Solve() {
 			for (int i = 0; i < 10; ++i) {
 				if (Model.Solve()) {
@@ -618,10 +579,9 @@ namespace modelo_william {
 						Console.WriteLine($"{stringKey}: {Model.GetValue(decisionVarX)}");
 					}
 
-					var bottleneckValue = GetBottleneckValue();
+					var bottleneckValue = Model.GetValue(BottleneckExpr);
 					Console.WriteLine($"#{i}: Bottleneck: {bottleneckValue}");
 					BottleneckRestriction.LB = bottleneckValue + 1;
-					//Console.WriteLine(BottleneckRestriction.ToString());
 				} else {
 					Console.WriteLine(Model.GetStatus());
 					Console.WriteLine("-------- End --------");
