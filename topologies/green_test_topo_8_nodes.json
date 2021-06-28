@@ -1,81 +1,85 @@
 {
-  "nodes": [
+  "NodeList": [
     {
       "nodeNumber": 0,
       "nodeType": "CN",
       "cpu": 0,
       "RAM": 0,
-      "RU": 0
+      "RU": 0,
+      "StaticPower": 0,
+      "DynamicPower": 0
     },
     {
       "nodeNumber": 1,
       "nodeType": "L2_aggregation",
-      "cpu": 16,
+      "cpu": 6,
       "RAM": 8,
-      "RU": 0
+      "RU": 0,
+      "StaticPower": 40,
+      "DynamicPower": 210
     },
     {
       "nodeNumber": 2,
       "nodeType": "L2_aggregation",
-      "cpu": 16,
+      "cpu": 8,
       "RAM": 8,
-      "RU": 0
+      "RU": 0,
+      "StaticPower": 40,
+      "DynamicPower": 200
     },
     {
       "nodeNumber": 3,
-      "nodeType": "L1_aggregation",
+      "nodeType": "L2_aggregation",
       "cpu": 8,
-      "RAM": 4,
-      "RU": 1
+      "RAM": 8,
+      "RU": 0,
+      "StaticPower": 40,
+      "DynamicPower": 280
     },
     {
       "nodeNumber": 4,
       "nodeType": "L1_aggregation",
       "cpu": 8,
       "RAM": 4,
-      "RU": 1
+      "RU": 1,
+      "StaticPower": 40,
+      "DynamicPower": 240
     },
     {
       "nodeNumber": 5,
       "nodeType": "L1_aggregation",
       "cpu": 8,
       "RAM": 4,
-      "RU": 1
+      "RU": 1,
+      "StaticPower": 40,
+      "DynamicPower": 240
     },
     {
       "nodeNumber": 6,
       "nodeType": "L1_aggregation",
       "cpu": 8,
       "RAM": 4,
-      "RU": 1
+      "RU": 1,
+      "StaticPower": 40,
+      "DynamicPower": 290
     },
     {
       "nodeNumber": 7,
       "nodeType": "L1_aggregation",
       "cpu": 8,
       "RAM": 4,
-      "RU": 1
+      "RU": 1,
+      "StaticPower": 40,
+      "DynamicPower": 290
     },
     {
       "nodeNumber": 8,
       "nodeType": "L1_aggregation",
       "cpu": 8,
       "RAM": 4,
-      "RU": 1
-    },
-    {
-      "nodeNumber": 9,
-      "nodeType": "L1_aggregation",
-      "cpu": 8,
-      "RAM": 4,
-      "RU": 1
-    },
-    {
-      "nodeNumber": 10,
-      "nodeType": "L1_aggregation",
-      "cpu": 8,
-      "RAM": 4,
-      "RU": 1
+      "RU": 1,
+      "StaticPower": 40,
+      "DynamicPower": 290
     }
   ]
 }

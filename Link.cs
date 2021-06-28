@@ -2,18 +2,18 @@ using System.Collections.Generic;
 
 namespace modelo_william {
 	public class Link {
-		public List<LinkData> links { get; set; }
+		public List<LinkData> LinkList { get; set; }
 
 		public Link() {
-			links = new List<LinkData>();
+			LinkList = new List<LinkData>();
 		}
 
 		public void Add(LinkData link) {
-			links.Add(link);
+			LinkList.Add(link);
 		}
 
 		public int Count() {
-			return links.Count;
+			return LinkList.Count;
 		}
 	}
 

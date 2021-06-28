@@ -13,10 +13,10 @@ namespace modelo_william {
 	}
 	
 	public class Path {
-		public Dictionary<string, PathData> paths { get; set; }
+		public Dictionary<string, PathData> PathList { get; set; }
 
 		public Path() {
-			paths = new Dictionary<string, PathData>();
+			PathList = new Dictionary<string, PathData>();
 		}
 		
 		public void FindPaths(string linkPath, string nodePath) {
@@ -43,14 +43,14 @@ namespace modelo_william {
 			}
 
 			Graph graph = new Graph(links.Count(), nodes.Count(), Constants.MaxPaths);
-			foreach (LinkData link in links.links) {
+			foreach (LinkData link in links.LinkList) {
 				uint source      = Math.Min(link.fromNode, link.toNode);
 				uint destination = Math.Max(link.fromNode, link.toNode);
 				graph.AddEdge(source, destination);
 			}
 
 			List<uint> destinations = new List<uint>();
-			foreach (NodeData node in nodes.nodes) {
+			foreach (NodeData node in nodes.NodeList) {
 				if (node.RU == 1) destinations.Add(node.nodeNumber);
 			}
 
@@ -59,13 +59,20 @@ namespace modelo_william {
 				rawPaths.AddRange(graph.FindAllPaths(0, destination));
 			}
 
+			foreach (uint[] rawPath in rawPaths) {
+				foreach (uint node in rawPath) {
+					Console.Write($" -> {node}");
+				}
+				Console.WriteLine("");
+			}
+
 			/* start path data assign */
 			uint count = 2, id = 1;
 			
 			foreach (uint[] path in rawPaths) {
-				PathData pathData = new PathData();
 				for (int i = 0; i < path.Length-1; ++i) {
 					if (i != count) continue;
+					PathData pathData = new PathData();
 					pathData.seq.Add(path[1]);
 					pathData.p1.Add($"({path[0]}, {path[1]})");
 						
@@ -93,8 +100,8 @@ namespace modelo_william {
 					++count;
 
 					bool append = true;
-					if (paths.Count > 0) {
-						foreach (var pd in paths) {
+					if (PathList.Count > 0) {
+						foreach (var pd in PathList) {
 							if (pd.Value == null) continue;
 							if (pd.Value.p1.Equals(pathData.p1) && pd.Value.p2.Equals(pathData.p2) &&
 							    pd.Value.p3.Equals(pathData.p3) && pd.Value.id != pathData.id) {
@@ -104,7 +111,7 @@ namespace modelo_william {
 					}
 
 					if (!append) continue;
-					paths.Add($"path-{id}", pathData);
+					PathList.Add($"path-{id}", pathData);
 					++id;
 				}
 
@@ -113,10 +120,10 @@ namespace modelo_william {
 
 			count = 1;
 			foreach (uint[] path in rawPaths) {
-				PathData pathData = new PathData();
 				for (int i = 0; i < path.Length - 1; ++i) {
 					if (i != count) continue;
-					pathData.seq.Add(path[1]);
+					PathData pathData = new PathData();
+					pathData.seq.Add(path[0]);
 
 					pathData.seq.Add(path[i]);
 					for (int j = 0; j < path.Length-1; ++j) {
@@ -144,8 +151,8 @@ namespace modelo_william {
 					++count;
 
 					bool append = true;
-					if (paths.Count > 0) {
-						foreach (var pd in paths) {
+					if (PathList.Count > 0) {
+						foreach (var pd in PathList) {
 							if (pd.Value == null) continue;
 							if (pd.Value.p1.Equals(pathData.p1) && pd.Value.p2.Equals(pathData.p2) &&
 							    pd.Value.p3.Equals(pathData.p3)) {
@@ -155,7 +162,7 @@ namespace modelo_william {
 					}
 
 					if (!append) continue;
-					paths.Add($"path-{id}", pathData);
+					PathList.Add($"path-{id}", pathData);
 					++id;
 				}
 
@@ -184,8 +191,8 @@ namespace modelo_william {
 				++count;
 
 				bool append = true;
-				if (paths.Count > 0) {
-					foreach (var pd in paths) {
+				if (PathList.Count > 0) {
+					foreach (var pd in PathList) {
 						if (pd.Value == null) continue;
 						if (pd.Value.p1.Equals(pathData.p1) && pd.Value.p2.Equals(pathData.p2) &&
 						    pd.Value.p3.Equals(pathData.p3) && pd.Value.id != pathData.id) {
@@ -195,11 +202,11 @@ namespace modelo_william {
 				}
 
 				if (!append) continue;
-				paths.Add($"path-{id}", pathData);
+				PathList.Add($"path-{id}", pathData);
 				++id;
 			}
 
-			Console.WriteLine($"{paths.Count} paths configurations successfully found");
+			Console.WriteLine($"{PathList.Count} paths configurations successfully found");
 		}
 	}
 
@@ -254,7 +261,7 @@ namespace modelo_william {
 			if (src == dest) {
 				if (!(path.Count > 4 && path.Contains(1) && path.Contains(2))) {
 					if (++_pathsCount < _maxPaths + 1) {
-						paths.Add(path.ToArray());
+						paths.Add(path.Reverse().ToArray());
 					}
 				}
 			} else {
