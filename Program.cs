@@ -16,6 +16,7 @@ namespace modelo_william {
 			string linkPath = @"D:\Workspace\code\csharp\modelo_william\topologies\green_test_topo_8_links.json";
 			string nodePath = @"D:\Workspace\code\csharp\modelo_william\topologies\green_test_topo_8_nodes.json";
 			string pathPath = @"D:\Workspace\code\csharp\modelo_william\topologies\green_test_topo_8_paths.json";
+			string soluPath = @"D:\Workspace\code\csharp\modelo_william\solutions\green_test_topo_8_solution.txt";
 			
 			//Path path = new Path();
 			//path.FindPaths(linkPath, nodePath);
@@ -35,7 +36,7 @@ namespace modelo_william {
 
 			Utils.Init(links, nodes, paths);
 			Utils.CreateModel();
-			Utils.Solve();
+			Utils.Solve(soluPath);
 			
 		}
 	}
@@ -93,6 +94,8 @@ namespace modelo_william {
 	}
 
 	internal static class Utils {
+		private const int                         IterationLimit = 50;
+		
 		public static Cplex                       Model;
 		public static Dictionary<string, IIntVar> X;
 		public static Dictionary<string, uint[]>  Keys;
@@ -349,12 +352,12 @@ namespace modelo_william {
 
 			#region Objective Function
 
-			var ceilFunction        = Model.LinearIntExpr();
 			var dynamicCostFunction = Model.LinearNumExpr();
 			var staticCostFunction  = Model.NumExpr();
 
 			foreach (Cr cr in Crs.Values) {
 				if (cr.Id == 0) continue;
+				var ceilFunction = Model.LinearIntExpr();
 
 				for (ushort f = 0; f <= 8; ++f) {
 					foreach ((string stringKey, IIntVar decisionVarX) in X) {
@@ -377,6 +380,8 @@ namespace modelo_william {
 							m = 1;
 						}
 
+						if (m == 0 || u == 0) continue;
+						
 						dynamicCostFunction.AddTerm(decisionVarX,
 							u * m * Fses[f].CpuUsage * cr.DynamicPower / cr.Cpu);
 
@@ -384,9 +389,7 @@ namespace modelo_william {
 					}
 				}
 
-				staticCostFunction = Model.Sum(Model.Prod(Model.Min(ceilFunction, 1), cr.StaticPower),
-					staticCostFunction);
-				ceilFunction.Clear();
+				staticCostFunction = Model.Sum(Model.Prod(Model.Min(ceilFunction, 1), cr.StaticPower), staticCostFunction);
 			}
 
 			Model.AddMinimize(Model.Sum(staticCostFunction, dynamicCostFunction));
@@ -395,14 +398,12 @@ namespace modelo_william {
 
 			#region Bottleneck Restriction
 
-			var fsesInCrFunction    = Model.LinearIntExpr();
 			BottleneckExpr = Model.NumExpr();
 
 			foreach (Cr cr in Crs.Values) {
 				if (cr.Id == 0) continue;
 				for (int f = 8; f >= 0; --f) {
-					//ceilFunction = Model.LinearIntExpr();
-					fsesInCrFunction = Model.LinearIntExpr();
+					var fsesInCrFunction = Model.LinearIntExpr();
 
 					foreach (var (stringKey, decisionVarX) in X) {
 						Route route = Routes[Keys[stringKey][0]];
@@ -428,7 +429,6 @@ namespace modelo_william {
 						if (m == 0 || u == 0) continue;
 
 						fsesInCrFunction.AddTerm(decisionVarX, u * m);
-						//ceilFunction.AddTerm(decisionVarX, u * m);
 					}
 
 					BottleneckExpr = Model.Sum(Model.Sum(Model.Prod(Model.Min(fsesInCrFunction, 1), -1), fsesInCrFunction), BottleneckExpr);
@@ -441,9 +441,9 @@ namespace modelo_william {
 
 			#region One Route Restriction
 
-			var auxFunction = Model.LinearIntExpr();
 
 			foreach (Ru ru in Rus.Values) {
+				var auxFunction = Model.LinearIntExpr();
 
 				foreach (Drc drc in Drcs.Values) {
 					foreach (Route route in Routes.Values) {
@@ -454,19 +454,16 @@ namespace modelo_william {
 				}
 
 				Model.AddEq(auxFunction, 1, $"Route restriction for ru {ru.Id}");
-				auxFunction.Clear();
 			}
 
 			#endregion
 
 			#region Link Bandwidth Restriction
 
-			var bandwidthFunction = Model.LinearNumExpr();
-
 			for (var i = 0; i < LinkCapacities.Length; ++i) {
 				for (var j = i + 1; j < LinkCapacities.Length; ++j) {
 					if (i == j) continue;
-					bandwidthFunction.Clear();
+					var bandwidthFunction = Model.LinearNumExpr();
 
 					foreach ((string stringKey, IIntVar decisionVarX) in X) {
 						Route route = Routes[Keys[stringKey][0]];
@@ -521,11 +518,10 @@ namespace modelo_william {
 
 			#region Processing Capacity Restriction
 
-			var processingFunction = Model.LinearNumExpr();
 
 			foreach (Cr cr in Crs.Values) {
 				if (cr.Id == 0) continue; // we dont have functions running on the Core
-				processingFunction.Clear();
+				var processingFunction = Model.LinearNumExpr();
 
 				for (ushort f = 0; f <= 8; ++f) {
 					foreach ((string stringKey, IIntVar decisionVarX) in X) {
@@ -567,27 +563,42 @@ namespace modelo_william {
 			Model.ExportModel("model.lp");
 		}
 		
-		public static void Solve() {
-			for (int i = 0; i < 10; ++i) {
+		public static void Solve(string path) {
+			string solution = "";
+			
+			for (int i = 0; i < IterationLimit; ++i) {
 				if (Model.Solve()) {
 
-					Console.WriteLine($"-------- Start Iteration {i} --------");
+					Console.WriteLine($"-------- Iteration {i} --------");
+					solution += $"-------- Iteration {i} --------\n";
+					
 					Console.WriteLine(Model.ObjValue);
+					solution += $"Objective Value: {Model.GetObjValue()} W\n";
+					
+					var bottleneckValue = Model.GetValue(BottleneckExpr);
+					Console.WriteLine($"Aggregation Value: {bottleneckValue}");
+					solution += $"Aggregation Value: {bottleneckValue}\n";
 
+					solution += "Solution: \n";
 					foreach ((string stringKey, IIntVar decisionVarX) in X) {
-						if (Model.GetValue(decisionVarX) > 1 || Model.GetValue(decisionVarX) < 1) continue;
-						Console.WriteLine($"{stringKey}: {Model.GetValue(decisionVarX)}");
+						if (Model.GetValue(decisionVarX) > 0 || Model.GetValue(decisionVarX) < 0 ) {
+							Console.WriteLine($"{stringKey}: {Model.GetValue(decisionVarX)}");
+							solution += $"\tX{stringKey}: {Model.GetValue(decisionVarX)}\n";
+						}
 					}
 
-					var bottleneckValue = Model.GetValue(BottleneckExpr);
-					Console.WriteLine($"#{i}: Bottleneck: {bottleneckValue}");
 					BottleneckRestriction.LB = bottleneckValue + 1;
+					solution += "\n";
 				} else {
 					Console.WriteLine(Model.GetStatus());
 					Console.WriteLine("-------- End --------");
+					solution += "-------- End --------";
 					break;
 				}
 			}
+			
+			if (!File.Exists(path)) File.Create(path);
+			File.WriteAllText(path, solution);
 		}
 	}
 

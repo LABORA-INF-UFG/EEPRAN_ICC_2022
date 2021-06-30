@@ -12,11 +12,11 @@
     {
       "nodeNumber": 1,
       "nodeType": "L2_aggregation",
-      "cpu": 6,
+      "cpu": 4,
       "RAM": 8,
       "RU": 0,
       "StaticPower": 40,
-      "DynamicPower": 210
+      "DynamicPower": 120
     },
     {
       "nodeNumber": 2,
@@ -25,16 +25,16 @@
       "RAM": 8,
       "RU": 0,
       "StaticPower": 40,
-      "DynamicPower": 200
+      "DynamicPower": 120
     },
     {
       "nodeNumber": 3,
       "nodeType": "L2_aggregation",
-      "cpu": 8,
+      "cpu": 4,
       "RAM": 8,
       "RU": 0,
       "StaticPower": 40,
-      "DynamicPower": 280
+      "DynamicPower": 130
     },
     {
       "nodeNumber": 4,
@@ -43,7 +43,7 @@
       "RAM": 4,
       "RU": 1,
       "StaticPower": 40,
-      "DynamicPower": 240
+      "DynamicPower": 340
     },
     {
       "nodeNumber": 5,
@@ -52,7 +52,7 @@
       "RAM": 4,
       "RU": 1,
       "StaticPower": 40,
-      "DynamicPower": 240
+      "DynamicPower": 340
     },
     {
       "nodeNumber": 6,
@@ -61,7 +61,7 @@
       "RAM": 4,
       "RU": 1,
       "StaticPower": 40,
-      "DynamicPower": 290
+      "DynamicPower": 340
     },
     {
       "nodeNumber": 7,
@@ -70,7 +70,7 @@
       "RAM": 4,
       "RU": 1,
       "StaticPower": 40,
-      "DynamicPower": 290
+      "DynamicPower": 340
     },
     {
       "nodeNumber": 8,
@@ -79,7 +79,7 @@
       "RAM": 4,
       "RU": 1,
       "StaticPower": 40,
-      "DynamicPower": 290
+      "DynamicPower": 340
     }
   ]
 }
