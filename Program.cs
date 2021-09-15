@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,31 +14,35 @@ namespace modelo_william {
 	class Program {
 		static void Main(string[] args) {
 			var    option   = new JsonSerializerOptions {WriteIndented = true};
-			string linkPath = @"D:\Workspace\code\csharp\modelo_william\topologies\green_test_topo_8_links.json";
-			string nodePath = @"D:\Workspace\code\csharp\modelo_william\topologies\green_test_topo_8_nodes.json";
-			string pathPath = @"D:\Workspace\code\csharp\modelo_william\topologies\green_test_topo_8_paths.json";
-			string soluPath = @"D:\Workspace\code\csharp\modelo_william\solutions\green_test_topo_8_solution.txt";
-			
-			//Path path = new Path();
-			//path.FindPaths(linkPath, nodePath);
-			//File.WriteAllText(pathPath, JsonSerializer.Serialize(path, option));
-			
+			string linkPath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_links.json";
+			string nodePath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_nodes_5.json";
+			string pathPath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_paths.json";
+			string soluPath = @"D:\Workspace\code\csharp\modelo_william\solutions\power_test_topo_27_hier_solution_5.txt";
+
+			Path path = new Path();
+			path.FindPaths(linkPath, nodePath);
+			File.WriteAllText(pathPath, JsonSerializer.Serialize(path, option));
+
 			StreamReader linkReader = new StreamReader(linkPath);
 			string       jsonLinks  = linkReader.ReadToEnd();
-			Link         links      = JsonSerializer.Deserialize<Link>(jsonLinks);
+			List<Link>         links      = JsonSerializer.Deserialize<List<Link>>(jsonLinks);
 			
 			StreamReader nodeReader = new StreamReader(nodePath);
 			string       jsonNodes  = nodeReader.ReadToEnd();
-			Node         nodes      = JsonSerializer.Deserialize<Node>(jsonNodes);
-			
+			List<Node>   nodes      = JsonSerializer.Deserialize<List<Node>>(jsonNodes);
+
 			StreamReader pathReader = new StreamReader(pathPath);
 			string       jsonPaths  = pathReader.ReadToEnd();
 			Path         paths      = JsonSerializer.Deserialize<Path>(jsonPaths);
+			
+			linkReader.Close();
+			nodeReader.Close();
+			pathReader.Close();
 
 			Utils.Init(links, nodes, paths);
 			Utils.CreateModel();
 			Utils.Solve(soluPath);
-			
+
 		}
 	}
 
@@ -64,9 +69,9 @@ namespace modelo_william {
 	internal class Cr {
 		public uint   Id           { get; set; }
 		public uint   NumBs        { get; set; }
-		public double  Cpu          { get; set; }
-		public ushort StaticPower  { get; set; }
-		public ushort DynamicPower { get; set; }
+		public double Cpu          { get; set; }
+		public float  StaticPower  { get; set; }
+		public float  DynamicPower { get; set; }
 	}
 	internal class Drc {
 		public uint   Id          { get; set; }
@@ -124,43 +129,43 @@ namespace modelo_william {
 			return $"({route.Id},{drc.Id},{ru.Id})";
 		}
 
-		private static Dictionary<uint, Route> ProcessRoutes(Link links, Node nodes, Path paths) {
+		private static Dictionary<uint, Route> ProcessRoutes(List<Link> links, List<Node> nodes, Path paths) {
 			Dictionary<uint, Route> routes = new Dictionary<uint, Route>();
 
-			LinkDelays     = new float[nodes.Count()][];
-			LinkCapacities = new uint[nodes.Count()][];
-			for (int i = 0; i < nodes.Count(); ++i) {
-				LinkDelays[i]     = new float[nodes.Count()];
-				LinkCapacities[i] = new uint[nodes.Count()];
+			LinkDelays     = new float[nodes.Count + 1][];
+			LinkCapacities = new uint[nodes.Count + 1][];
+			for (int i = 0; i < nodes.Count; ++i) {
+				LinkDelays[i]     = new float[nodes.Count + 1];
+				LinkCapacities[i] = new uint[nodes.Count + 1];
 			}
 
-			foreach (LinkData link in links.LinkList) {
-				LinkDelays[link.fromNode][link.toNode]     = link.delay;
-				LinkCapacities[link.fromNode][link.toNode] = link.capacity;
+			foreach (var link in links) {
+				LinkDelays[link.FromNode][link.ToNode]     = link.Delay;
+				LinkCapacities[link.FromNode][link.ToNode] = link.Capacity;
 			}
 
 			foreach (PathData path in paths.PathList.Values) {
 				Route route = new Route();
-				route.Id = path.id;
+				route.Id = path.Id;
 
 				route.P1 = new List<uint[]>();
-				foreach (string s in path.p1) {
+				foreach (string s in path.P1) {
 					route.P1.Add(String2Tuple(s));
 				}
 
 				route.P2 = new List<uint[]>();
-				foreach (string s in path.p2) {
+				foreach (string s in path.P2) {
 					route.P2.Add(String2Tuple(s));
 				}
 
 				route.P3 = new List<uint[]>();
-				foreach (string s in path.p3) {
+				foreach (string s in path.P3) {
 					route.P3.Add(String2Tuple(s));
 				}
 
-				route.Seq    = path.seq;
-				route.Source = path.source;
-				route.Target = path.target;
+				route.Seq    = path.Seq;
+				route.Source = path.Source;
+				route.Target = path.Target;
 
 				route.DelayP1 = 0.0f;
 				foreach (uint[] tuple in route.P1) {
@@ -177,19 +182,19 @@ namespace modelo_william {
 					route.DelayP3 += LinkDelays[tuple[0]][tuple[1]];
 				}
 
-				routes.Add(path.id, route);
+				routes.Add(path.Id, route);
 			}
 
 			return routes;
 		}
 
-		private static Dictionary<uint, Cr> ProcessCrs(Node nodes) {
-			return nodes.NodeList.ToDictionary(node => node.nodeNumber, node => new Cr {
-				Id           = node.nodeNumber,
+		private static Dictionary<uint, Cr> ProcessCrs(List<Node> nodes) {
+			return nodes.ToDictionary(node => node.Number, node => new Cr {
+				Id           = node.Number,
 				NumBs        = 0,
-				Cpu          = node.cpu,
-				StaticPower  = node.StaticPower,
-				DynamicPower = node.DynamicPower
+				Cpu          = node.Cpu,
+				StaticPower  = node.Tdp * node.StaticPercentage,
+				DynamicPower = node.Tdp - (node.Tdp * node.StaticPercentage)
 			});
 		}
 
@@ -298,13 +303,13 @@ namespace modelo_william {
 			return fss;
 		}
 
-		private static Dictionary<uint, Ru> ProcessRus(Node nodes) {
+		private static Dictionary<uint, Ru> ProcessRus(List<Node> nodes) {
 			Dictionary<uint, Ru> rus = new Dictionary<uint, Ru>();
 			ushort               i   = 1;
-			foreach (var node in nodes.NodeList.Where(node => node.RU == 1)) {
+			foreach (var node in nodes.Where(node => node.Ru == 1)) {
 				rus.Add(i, new Ru {
 					Id           = i,
-					AssociatedCr = node.nodeNumber
+					AssociatedCr = node.Number
 				});
 				++i;
 			}
@@ -312,7 +317,7 @@ namespace modelo_william {
 			return rus;
 		}
 
-		public static void Init(Link links, Node nodes, Path paths) {
+		public static void Init(List<Link> links, List<Node> nodes, Path paths) {
 			Routes = ProcessRoutes(links, nodes, paths);
 			Crs    = ProcessCrs(nodes);
 			Rus    = ProcessRus(nodes);
@@ -564,7 +569,9 @@ namespace modelo_william {
 		}
 		
 		public static void Solve(string path) {
-			string solution = "";
+			string solution    = "";
+			string consumption = "consumptions = [";
+			string aggregation = "aggregations = [";
 			
 			for (int i = 0; i < IterationLimit; ++i) {
 				if (Model.Solve()) {
@@ -573,11 +580,13 @@ namespace modelo_william {
 					solution += $"-------- Iteration {i} --------\n";
 					
 					Console.WriteLine(Model.ObjValue);
-					solution += $"Objective Value: {Model.GetObjValue()} W\n";
+					solution += $"Objective Value: {Model.GetObjValue().ToString("G", CultureInfo.InvariantCulture)} W\n";
+					consumption += $" {Model.GetObjValue().ToString("G", CultureInfo.InvariantCulture)},";
 					
 					var bottleneckValue = Model.GetValue(BottleneckExpr);
 					Console.WriteLine($"Aggregation Value: {bottleneckValue}");
-					solution += $"Aggregation Value: {bottleneckValue}\n";
+					solution += $"Aggregation Value: {bottleneckValue.ToString("G", CultureInfo.InvariantCulture)}\n";
+					aggregation += $" {bottleneckValue.ToString("G", CultureInfo.InvariantCulture)},";
 
 					solution += "Solution: \n";
 					foreach ((string stringKey, IIntVar decisionVarX) in X) {
@@ -596,9 +605,15 @@ namespace modelo_william {
 					break;
 				}
 			}
-			
-			if (!File.Exists(path)) File.Create(path);
-			File.WriteAllText(path, solution);
+
+			consumption = consumption.Remove(consumption.Length-1) + "]";
+			aggregation = aggregation.Remove(aggregation.Length-1) + "]";
+			File.WriteAllText(path, "");
+			var write = File.AppendText(path);
+			write.WriteLine(solution);
+			write.WriteLine(consumption);
+			write.WriteLine(aggregation);
+			write.Close();
 		}
 	}
 

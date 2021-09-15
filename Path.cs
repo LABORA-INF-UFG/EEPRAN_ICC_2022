@@ -31,27 +31,29 @@ namespace modelo_william {
 			StreamReader linkReader, nodeReader;
 			
 			linkReader = new StreamReader(linkPath);
-			string jsonLinks = linkReader.ReadToEnd();
-			Link   links     = JsonSerializer.Deserialize<Link>(jsonLinks);
+			string     jsonLinks = linkReader.ReadToEnd();
+			List<Link> links     = JsonSerializer.Deserialize<List<Link>>(jsonLinks);
+			linkReader.Close();
 			
 			nodeReader = new StreamReader(nodePath);
-			string jsonNodes = nodeReader.ReadToEnd();
-			Node nodes = JsonSerializer.Deserialize<Node>(jsonNodes);
+			string     jsonNodes = nodeReader.ReadToEnd();
+			List<Node> nodes     = JsonSerializer.Deserialize<List<Node>>(jsonNodes);
+			nodeReader.Close();
 
 			if (nodes == null || links == null) {
 				throw new Exception("Failed to parse json.");
 			}
 
 			Graph graph = new Graph(links.Count(), nodes.Count(), Constants.MaxPaths);
-			foreach (LinkData link in links.LinkList) {
-				uint source      = Math.Min(link.fromNode, link.toNode);
-				uint destination = Math.Max(link.fromNode, link.toNode);
+			foreach (var link in links) {
+				uint source      = Math.Min(link.FromNode, link.ToNode);
+				uint destination = Math.Max(link.FromNode, link.ToNode);
 				graph.AddEdge(source, destination);
 			}
 
 			List<uint> destinations = new List<uint>();
-			foreach (NodeData node in nodes.NodeList) {
-				if (node.RU == 1) destinations.Add(node.nodeNumber);
+			foreach (var node in nodes) {
+				if (node.Ru == 1) destinations.Add(node.Number);
 			}
 
 			List<uint[]> rawPaths        = new List<uint[]>();
@@ -73,38 +75,38 @@ namespace modelo_william {
 				for (int i = 0; i < path.Length-1; ++i) {
 					if (i != count) continue;
 					PathData pathData = new PathData();
-					pathData.seq.Add(path[1]);
-					pathData.p1.Add($"({path[0]}, {path[1]})");
+					pathData.Seq.Add(path[1]);
+					pathData.P1.Add($"({path[0]}, {path[1]})");
 						
-					pathData.seq.Add(path[i]);
+					pathData.Seq.Add(path[i]);
 					for (int j = 1; j < path.Length-1; ++j) {
 						if (j != i) {
-							pathData.p2.Add($"({path[j]}, {path[j+1]})");
+							pathData.P2.Add($"({path[j]}, {path[j+1]})");
 						} else {
 							break;
 						}
 					}
 
-					pathData.seq.Add(path[^1]);
+					pathData.Seq.Add(path[^1]);
 					for (int j = i; j < path.Length-1; ++j) {
 						if (j != path.Length - 1) {
-							pathData.p3.Add($"({path[j]}, {path[j+1]})");
+							pathData.P3.Add($"({path[j]}, {path[j+1]})");
 						} else {
 							break;
 						}
 					}
 
-					pathData.id     = id;
-					pathData.target = path[^1];
-					pathData.source = "CN";
+					pathData.Id     = id;
+					pathData.Target = path[^1];
+					pathData.Source = "CN";
 					++count;
 
 					bool append = true;
 					if (PathList.Count > 0) {
 						foreach (var pd in PathList) {
 							if (pd.Value == null) continue;
-							if (pd.Value.p1.Equals(pathData.p1) && pd.Value.p2.Equals(pathData.p2) &&
-							    pd.Value.p3.Equals(pathData.p3) && pd.Value.id != pathData.id) {
+							if (pd.Value.P1.Equals(pathData.P1) && pd.Value.P2.Equals(pathData.P2) &&
+							    pd.Value.P3.Equals(pathData.P3) && pd.Value.Id != pathData.Id) {
 								append = false;
 							}
 						}
@@ -123,39 +125,39 @@ namespace modelo_william {
 				for (int i = 0; i < path.Length - 1; ++i) {
 					if (i != count) continue;
 					PathData pathData = new PathData();
-					pathData.seq.Add(path[0]);
+					pathData.Seq.Add(path[0]);
 
-					pathData.seq.Add(path[i]);
+					pathData.Seq.Add(path[i]);
 					for (int j = 0; j < path.Length-1; ++j) {
 						if (j != i) {
-							pathData.p2.Add($"({path[j]}, {path[j+1]})");
+							pathData.P2.Add($"({path[j]}, {path[j+1]})");
 						}
 						if (j+1 == i) {
 							break;
 						}
 					}
 
-					pathData.seq.Add(path[^1]);
+					pathData.Seq.Add(path[^1]);
 					for (int j = i; j < path.Length-1; ++j) {
 						if (j != path.Length - 1) {
-							pathData.p3.Add($"({path[j]}, {path[j+1]})");
+							pathData.P3.Add($"({path[j]}, {path[j+1]})");
 						}
 						if (j+1 == i) {
 							break;
 						}
 					}
 
-					pathData.id     = id;
-					pathData.target = path[^1];
-					pathData.source = "CN";
+					pathData.Id     = id;
+					pathData.Target = path[^1];
+					pathData.Source = "CN";
 					++count;
 
 					bool append = true;
 					if (PathList.Count > 0) {
 						foreach (var pd in PathList) {
 							if (pd.Value == null) continue;
-							if (pd.Value.p1.Equals(pathData.p1) && pd.Value.p2.Equals(pathData.p2) &&
-							    pd.Value.p3.Equals(pathData.p3)) {
+							if (pd.Value.P1.Equals(pathData.P1) && pd.Value.P2.Equals(pathData.P2) &&
+							    pd.Value.P3.Equals(pathData.P3)) {
 								append = false;
 							}
 						}
@@ -171,31 +173,31 @@ namespace modelo_william {
 			
 			foreach (uint[] path in rawPaths) {
 				PathData pathData = new PathData();
-				pathData.seq.Add(0);
+				pathData.Seq.Add(0);
 
-				pathData.seq.Add(0);
+				pathData.Seq.Add(0);
 
-				pathData.seq.Add(path[^1]);
+				pathData.Seq.Add(path[^1]);
 				for (int j = 0; j < path.Length-1; ++j) {
 					if (j != path.Length - 1) {
-						pathData.p3.Add($"({path[j]}, {path[j+1]})");
+						pathData.P3.Add($"({path[j]}, {path[j+1]})");
 					}
 					if (j+1 == path.Length - 1) {
 						break;
 					}
 				}
 
-				pathData.id     = id;
-				pathData.target = path[^1];
-				pathData.source = "CN";
+				pathData.Id     = id;
+				pathData.Target = path[^1];
+				pathData.Source = "CN";
 				++count;
 
 				bool append = true;
 				if (PathList.Count > 0) {
 					foreach (var pd in PathList) {
 						if (pd.Value == null) continue;
-						if (pd.Value.p1.Equals(pathData.p1) && pd.Value.p2.Equals(pathData.p2) &&
-						    pd.Value.p3.Equals(pathData.p3) && pd.Value.id != pathData.id) {
+						if (pd.Value.P1.Equals(pathData.P1) && pd.Value.P2.Equals(pathData.P2) &&
+						    pd.Value.P3.Equals(pathData.P3) && pd.Value.Id != pathData.Id) {
 							append = false;
 						}
 					}
@@ -206,24 +208,24 @@ namespace modelo_william {
 				++id;
 			}
 
-			Console.WriteLine($"{PathList.Count} paths configurations successfully found");
+			Console.WriteLine($"{PathList.Count} Path configurations successfully found");
 		}
 	}
 
 	public class PathData {
-		public List<string> p2     { get; set; }
-		public List<string> p3     { get; set; }
-		public List<string> p1     { get; set; }
-		public uint         target { get; set; }
-		public List<uint>   seq    { get; set; }
-		public string       source { get; set; }
-		public uint         id     { get; set; }
+		public uint         Id     { get; set; }
+		public string       Source { get; set; }
+		public uint         Target { get; set; }
+		public List<uint>   Seq    { get; set; }
+		public List<string> P1     { get; set; }
+		public List<string> P2     { get; set; }
+		public List<string> P3     { get; set; }
 
 		public PathData() {
-			p2 = new List<string>();
-			p3 = new List<string>();
-			p1 = new List<string>();
-			seq = new List<uint>();
+			Seq = new List<uint>();
+			P1 = new List<string>();
+			P2 = new List<string>();
+			P3 = new List<string>();
 		}
 	}
 
@@ -237,7 +239,7 @@ namespace modelo_william {
 		public Graph(int edgeCount, int nodeCount, int maxPaths) {
 			_edgeCount          = edgeCount;
 			_maxPaths           = maxPaths;
-			_nodeHasBeenVisited = new bool[nodeCount];
+			_nodeHasBeenVisited = new bool[nodeCount+1];
 			_edges              = new Dictionary<uint, uint[]>();
 		}
 

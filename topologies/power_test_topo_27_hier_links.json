@@ -1,0 +1,290 @@
+[
+  {
+    "Capacity": 500,
+    "Delay": 0.332,
+    "FromNode": 0,
+    "ToNode": 1
+  },
+  {
+    "Capacity": 500,
+    "Delay": 0.86,
+    "FromNode": 0,
+    "ToNode": 2
+  },
+  {
+    "Capacity": 100,
+    "Delay": 0.153,
+    "FromNode": 1,
+    "ToNode": 3
+  },
+  {
+    "Capacity": 100,
+    "Delay": 0.153,
+    "FromNode": 1,
+    "ToNode": 4
+  },
+  {
+    "Capacity": 50,
+    "Delay": 0.354,
+    "FromNode": 1,
+    "ToNode": 5
+  },
+  {
+    "Capacity": 50,
+    "Delay": 0.354,
+    "FromNode": 1,
+    "ToNode": 6
+  },
+  {
+    "Capacity": 50,
+    "Delay": 0.86,
+    "FromNode": 1,
+    "ToNode": 7
+  },
+  {
+    "Capacity": 50,
+    "Delay": 0.354,
+    "FromNode": 2,
+    "ToNode": 3
+  },
+  {
+    "Capacity": 50,
+    "Delay": 0.86,
+    "FromNode": 2,
+    "ToNode": 4
+  },
+  {
+    "Capacity": 100,
+    "Delay": 0.153,
+    "FromNode": 2,
+    "ToNode": 5
+  },
+  {
+    "Capacity": 100,
+    "Delay": 0.153,
+    "FromNode": 2,
+    "ToNode": 6
+  },
+  {
+    "Capacity": 100,
+    "Delay": 0.153,
+    "FromNode": 2,
+    "ToNode": 7
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 3,
+    "ToNode": 8
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 4,
+    "ToNode": 8
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 3,
+    "ToNode": 9
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 4,
+    "ToNode": 9
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.096,
+    "FromNode": 3,
+    "ToNode": 10
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.096,
+    "FromNode": 4,
+    "ToNode": 10
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 3,
+    "ToNode": 11
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 4,
+    "ToNode": 11
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 5,
+    "ToNode": 12
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 6,
+    "ToNode": 12
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.096,
+    "FromNode": 5,
+    "ToNode": 13
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.096,
+    "FromNode": 6,
+    "ToNode": 13
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 6,
+    "ToNode": 14
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 7,
+    "ToNode": 14
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 6,
+    "ToNode": 15
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 7,
+    "ToNode": 15
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 6,
+    "ToNode": 16
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 7,
+    "ToNode": 16
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 6,
+    "ToNode": 17
+  },
+  {
+    "Capacity": 25,
+    "Delay": 0.287,
+    "FromNode": 7,
+    "ToNode": 17
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 8,
+    "ToNode": 18
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 9,
+    "ToNode": 18
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 8,
+    "ToNode": 19
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 9,
+    "ToNode": 19
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 10,
+    "ToNode": 20
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 11,
+    "ToNode": 20
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 10,
+    "ToNode": 21
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 11,
+    "ToNode": 21
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 12,
+    "ToNode": 22
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 13,
+    "ToNode": 22
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 12,
+    "ToNode": 23
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 13,
+    "ToNode": 23
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 14,
+    "ToNode": 24
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 15,
+    "ToNode": 24
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 16,
+    "ToNode": 25
+  },
+  {
+    "Capacity": 10,
+    "Delay": 0.287,
+    "FromNode": 17,
+    "ToNode": 25
+  }
+]
