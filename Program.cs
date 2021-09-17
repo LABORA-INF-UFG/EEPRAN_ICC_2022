@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using ILOG.Concert;
-
-using System.Xml;
 using ILOG.CPLEX;
 
 namespace modelo_william {
@@ -17,7 +14,7 @@ namespace modelo_william {
 			string linkPath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_links.json";
 			string nodePath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_nodes_5.json";
 			string pathPath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_paths.json";
-			string soluPath = @"D:\Workspace\code\csharp\modelo_william\solutions\power_test_topo_27_hier_solution_5.txt";
+			string soluPath = @"D:\Workspace\code\csharp\modelo_william\solutions\power_test_topo_27_hier_solution_test.txt";
 
 			Path path = new Path();
 			path.FindPaths(linkPath, nodePath);
@@ -25,7 +22,7 @@ namespace modelo_william {
 
 			StreamReader linkReader = new StreamReader(linkPath);
 			string       jsonLinks  = linkReader.ReadToEnd();
-			List<Link>         links      = JsonSerializer.Deserialize<List<Link>>(jsonLinks);
+			List<Link>   links      = JsonSerializer.Deserialize<List<Link>>(jsonLinks);
 			
 			StreamReader nodeReader = new StreamReader(nodePath);
 			string       jsonNodes  = nodeReader.ReadToEnd();
@@ -41,7 +38,8 @@ namespace modelo_william {
 
 			Utils.Init(links, nodes, paths);
 			Utils.CreateModel();
-			Utils.Solve(soluPath);
+			var paretoSet = Utils.Solve();
+			Utils.WriteSolutionToFile(paretoSet, soluPath);
 
 		}
 	}
@@ -98,6 +96,19 @@ namespace modelo_william {
 		public uint   AssociatedCr { get; set; }
 	}
 
+	internal class Key {
+		public Route Route { get; set; } 
+		public Drc   Drc   { get; set; }
+		public Ru    Ru    { get; set; }
+	}
+	
+	internal class Pareto {
+		public int       Iteration        { get; set; }
+		public double    PowerConsumption { get; set; }
+		public double    Aggregation      { get; set; }
+		public List<Key> Solution         { get; set; }
+	}
+	
 	internal static class Utils {
 		private const int                         IterationLimit = 50;
 		
@@ -116,7 +127,7 @@ namespace modelo_william {
 
 		static Utils() { }
 
-		private static uint[] String2Tuple(string text) {
+		private static uint[] StringToTuple(string text) {
 			uint[] tuple           = new uint[2];
 			int    endFirstNumber  = text.IndexOf(',', 0);
 			int    endSecondNumber = text.IndexOf(')', 0);
@@ -127,6 +138,31 @@ namespace modelo_william {
 
 		private static string GetStringKey(Route route, Drc drc, Ru ru) {
 			return $"({route.Id},{drc.Id},{ru.Id})";
+		}
+
+		private static Key StringToKey(string stringKey) {
+			Key key = new Key();
+			stringKey = stringKey.Substring(1);
+			stringKey = stringKey.Remove(stringKey.Length - 1, 1);
+			var values  = stringKey.Split(new char[] {','});
+			var routeId = Int32.Parse(values[0]);
+			var drcId = Int32.Parse(values[1]);
+			var ruId = Int32.Parse(values[2]);
+			
+			foreach (var route in Routes.Values.Where(route => route.Id == routeId)) {
+				key.Route = route;
+				break;
+			}
+			foreach (var drc in Drcs.Values.Where(drc => drc.Id == drcId)) {
+				key.Drc = drc;
+				break;
+			}
+			foreach (var ru in Rus.Values.Where(ru => ru.Id == ruId)) {
+				key.Ru = ru;
+				break;
+			}
+			
+			return key;
 		}
 
 		private static Dictionary<uint, Route> ProcessRoutes(List<Link> links, List<Node> nodes, Path paths) {
@@ -150,17 +186,17 @@ namespace modelo_william {
 
 				route.P1 = new List<uint[]>();
 				foreach (string s in path.P1) {
-					route.P1.Add(String2Tuple(s));
+					route.P1.Add(StringToTuple(s));
 				}
 
 				route.P2 = new List<uint[]>();
 				foreach (string s in path.P2) {
-					route.P2.Add(String2Tuple(s));
+					route.P2.Add(StringToTuple(s));
 				}
 
 				route.P3 = new List<uint[]>();
 				foreach (string s in path.P3) {
-					route.P3.Add(String2Tuple(s));
+					route.P3.Add(StringToTuple(s));
 				}
 
 				route.Seq    = path.Seq;
@@ -568,53 +604,71 @@ namespace modelo_william {
 			Model.ExportModel("model.lp");
 		}
 		
-		public static void Solve(string path) {
-			string solution    = "";
-			string consumption = "consumptions = [";
-			string aggregation = "aggregations = [";
+		public static List<Pareto> Solve() {
+			var paretoSet = new List<Pareto>();
 			
 			for (int i = 0; i < IterationLimit; ++i) {
 				if (Model.Solve()) {
+					var bottleneckValue = Model.GetValue(BottleneckExpr);
 
 					Console.WriteLine($"-------- Iteration {i} --------");
-					solution += $"-------- Iteration {i} --------\n";
+					Pareto pareto = new Pareto();
+					pareto.Iteration        = i;
+					pareto.PowerConsumption = Model.GetObjValue();
+					pareto.Aggregation = bottleneckValue;
+					pareto.Solution = new List<Key>();
 					
-					Console.WriteLine(Model.ObjValue);
-					solution += $"Objective Value: {Model.GetObjValue().ToString("G", CultureInfo.InvariantCulture)} W\n";
-					consumption += $" {Model.GetObjValue().ToString("G", CultureInfo.InvariantCulture)},";
-					
-					var bottleneckValue = Model.GetValue(BottleneckExpr);
-					Console.WriteLine($"Aggregation Value: {bottleneckValue}");
-					solution += $"Aggregation Value: {bottleneckValue.ToString("G", CultureInfo.InvariantCulture)}\n";
-					aggregation += $" {bottleneckValue.ToString("G", CultureInfo.InvariantCulture)},";
-
-					solution += "Solution: \n";
 					foreach ((string stringKey, IIntVar decisionVarX) in X) {
-						if (Model.GetValue(decisionVarX) > 0 || Model.GetValue(decisionVarX) < 0 ) {
-							Console.WriteLine($"{stringKey}: {Model.GetValue(decisionVarX)}");
-							solution += $"\tX{stringKey}: {Model.GetValue(decisionVarX)}\n";
+						if (Math.Abs(Model.GetValue(decisionVarX) - 1) < Math.Pow(10, -3)) {
+							pareto.Solution.Add(StringToKey(stringKey));
 						}
 					}
 
+					if (paretoSet.Count > 0 && paretoSet.Last().PowerConsumption >= pareto.PowerConsumption) {
+						paretoSet.RemoveAt(paretoSet.Count - 1);
+					}
+					paretoSet.Add(pareto);
 					BottleneckRestriction.LB = bottleneckValue + 1;
-					solution += "\n";
 				} else {
 					Console.WriteLine(Model.GetStatus());
 					Console.WriteLine("-------- End --------");
-					solution += "-------- End --------";
 					break;
 				}
 			}
 
-			consumption = consumption.Remove(consumption.Length-1) + "]";
-			aggregation = aggregation.Remove(aggregation.Length-1) + "]";
-			File.WriteAllText(path, "");
-			var write = File.AppendText(path);
-			write.WriteLine(solution);
-			write.WriteLine(consumption);
-			write.WriteLine(aggregation);
-			write.Close();
+			return paretoSet;
+		}
+		
+		public static void WriteSolutionToFile(List<Pareto> paretoSet, string filePath) {
+			File.WriteAllText(filePath, String.Empty);
+			var solution       = String.Empty;
+			var consumptionSet = "Consumptions = [";
+			var aggregationSet = "Aggregations = [";
+			
+			foreach (Pareto pareto in paretoSet) {
+				solution += $"-------- Iteration {pareto.Iteration} --------\n";
+				solution += $"Objective Value: {pareto.PowerConsumption.ToString("G", CultureInfo.InvariantCulture)} \n";
+				solution += $"Aggregation Value: {pareto.Aggregation.ToString("G", CultureInfo.InvariantCulture)} \n";
+				solution += "Solution: \n";
+				if (pareto.Iteration == paretoSet.Last().Iteration) {
+					consumptionSet += $" {pareto.PowerConsumption.ToString("G", CultureInfo.InvariantCulture)} ]";
+					aggregationSet += $" {Convert.ToInt32(pareto.Aggregation).ToString("G", CultureInfo.InvariantCulture)} ]";
+				} else {
+					consumptionSet += $" {pareto.PowerConsumption.ToString("G", CultureInfo.InvariantCulture)},";
+					aggregationSet += $" {Convert.ToInt32(pareto.Aggregation).ToString("G", CultureInfo.InvariantCulture)},";
+				}
+				foreach (Key key in pareto.Solution) {
+					solution += $"    RU {key.Ru.Id} uses DRC {key.Drc.Id} on route ({String.Join(", ", key.Route.Seq)}) \n";
+				}
+			}
+			
+			var writer = File.AppendText(filePath);
+			writer.WriteLine(consumptionSet);
+			writer.WriteLine(aggregationSet);
+			writer.WriteLine(solution);
+			writer.Close();
 		}
 	}
+	
 
 }
