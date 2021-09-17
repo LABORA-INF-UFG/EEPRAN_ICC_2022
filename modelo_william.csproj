@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="ILOG.Concert, Version=20.1.0.0, Culture=neutral, PublicKeyToken=7906592bc7cc7340">
+        <HintPath>C:\Program Files\IBM\ILOG\CPLEX_Studio201\cplex\bin\x64_win64\ILOG.Concert.dll</HintPath>
+      </Reference>
+      <Reference Include="ILOG.CPLEX, Version=20.1.0.0, Culture=neutral, PublicKeyToken=7906592bc7cc7340">
+        <HintPath>C:\Program Files\IBM\ILOG\CPLEX_Studio201\cplex\bin\x64_win64\ILOG.CPLEX.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="topologies\green_test_topo_8_nodes" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="solutions" />
+    </ItemGroup>
+
+</Project>
