@@ -11,11 +11,11 @@ namespace modelo_william {
 	class Program {
 		static void Main(string[] args) {
 			var    option   = new JsonSerializerOptions {WriteIndented = true};
-			string linkPath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_links.json";
-			string nodePath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_nodes_5.json";
-			string pathPath = @"D:\Workspace\code\csharp\modelo_william\topologies\power_test_topo_27_hier_paths.json";
-			string soluPath = @"D:\Workspace\code\csharp\modelo_william\solutions\power_test_topo_27_hier_solution_test.txt";
-
+			string linkPath = System.IO.Path.GetFullPath(@"..\topologies\power_test_topo_27_hier_links.json");
+			string nodePath = System.IO.Path.GetFullPath(@"..\topologies\power_test_topo_27_hier_nodes_5.json");
+			string pathPath = System.IO.Path.GetFullPath(@"..\topologies\power_test_topo_27_hier_paths.json");
+			string soluPath = System.IO.Path.GetFullPath(@"..\solutions\power_test_topo_27_hier_solution_test.txt");
+			
 			Path path = new Path();
 			path.FindPaths(linkPath, nodePath);
 			File.WriteAllText(pathPath, JsonSerializer.Serialize(path, option));
