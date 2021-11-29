@@ -1,0 +1,204 @@
+{
+  "NodeList": [
+    {
+      "Number": 1,
+      "Cpu": 128,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 450,
+      "StaticPercentage": 0.25,
+      "Ru": 0
+    },
+    {
+      "Number": 2,
+      "Cpu": 128,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 450,
+      "StaticPercentage": 0.27,
+      "Ru": 0
+    },
+    {
+      "Number": 3,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.28,
+      "Ru": 1
+    },
+    {
+      "Number": 4,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.29,
+      "Ru": 1
+    },
+    {
+      "Number": 5,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.24,
+      "Ru": 1
+    },
+    {
+      "Number": 6,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.30,
+      "Ru": 1
+    },
+    {
+      "Number": 7,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.24,
+      "Ru": 1
+    },
+    {
+      "Number": 8,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.28,
+      "Ru": 1
+    },
+    {
+      "Number": 9,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.20,
+      "Ru": 1
+    },
+    {
+      "Number": 10,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.23,
+      "Ru": 1
+    },
+    {
+      "Number": 11,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.24,
+      "Ru": 1
+    },
+    {
+      "Number": 12,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.21,
+      "Ru": 1
+    },
+    {
+      "Number": 13,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.25,
+      "Ru": 1
+    },
+    {
+      "Number": 14,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.27,
+      "Ru": 1
+    },
+    {
+      "Number": 15,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.20,
+      "Ru": 1
+    },
+    {
+      "Number": 16,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.29,
+      "Ru": 1
+    },
+    {
+      "Number": 17,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.28,
+      "Ru": 1
+    },
+    {
+      "Number": 18,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.27,
+      "Ru": 1
+    },
+    {
+      "Number": 19,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.24,
+      "Ru": 1
+    },
+    {
+      "Number": 20,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.29,
+      "Ru": 1
+    },
+    {
+      "Number": 21,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.24,
+      "Ru": 1
+    },
+    {
+      "Number": 22,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.28,
+      "Ru": 1
+    },
+    {
+      "Number": 23,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.22,
+      "Ru": 1
+    },
+    {
+      "Number": 24,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.29,
+      "Ru": 1
+    },
+    {
+      "Number": 25,
+      "Cpu": 64,
+      "Model": "AMD EPYC 7742",
+      "Tdp": 225,
+      "StaticPercentage": 0.28,
+      "Ru": 1
+    }
+  ]
+}
