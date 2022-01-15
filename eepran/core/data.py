@@ -1,4 +1,5 @@
 import json
+from typing import List
 from collections import namedtuple, defaultdict
 
 ComputingCore = namedtuple('ComputingCore', 'cr_dict ru_list')
@@ -6,6 +7,7 @@ Ru = namedtuple('Ru', 'identifier associated_cr')
 Hardware = namedtuple('Hardware', 'identifier cr cpu static_power dynamic_power')
 VarKey = namedtuple('VarKey', 'route drc ru')
 Pareto = namedtuple('Pareto', 'iteration power_consumption centralization solution')
+Sequence = namedtuple('Sequence', 'cr hw')
 
 
 class Link:
@@ -197,6 +199,35 @@ def export_solution_data(solution_file_path: str, pareto_set: list):
                                                                                     var_key.route.sequence[2])
     with open(solution_file_path, 'w') as solution_file:
         solution_file.write(solution_text)
+
+
+def process_min_energy_solution_data(solution_set: list) -> str:
+    solution_text = ''
+    consumption_set = []
+    centralization_set = []
+    for solution in solution_set:
+        consumption_set.append(solution.power_consumption)
+        centralization_set.append(solution.centralization)
+
+    solution_text += 'Consumption    set = {}\n'.format(str(consumption_set))
+    solution_text += 'centralization set = {}\n'.format(str(centralization_set))
+
+    for solution in solution_set:
+        solution_text += '\n-------- Centralization {}% --------\n'.format(str(solution.iteration))
+        solution_text += 'Objective      value: {:.2f}\n'.format(solution.power_consumption)
+        solution_text += 'Centralization value: {:.2f}\n'.format(solution.centralization)
+        solution_text += 'Centralization percentage: {:.2f}%\n'.format(solution.centralization / 154 * 100)
+        hws = []
+        crs = []
+        for key in solution.solution:
+            var_key: VarKey = key
+            for node in var_key.route.sequence:
+                hws.append(node[1])
+                crs.append(node[0])
+        solution_text += 'Hardware Count: {}\n'.format(len(set(hws)))
+        solution_text += 'CR Count: {}\n'.format(len(set(crs)))
+
+    return solution_text
 
 
 def process_cr_dict(node_list: list):

@@ -34,3 +34,19 @@ def solve_eepran_model(model: Model, bottleneck: AbstractConstraint) -> list:
         # update epsilon constraint for the next iteration
         bottleneck.right_expr = new_pareto.centralization + 1
     return pareto_set
+
+
+def solve_eepran_min_energy_model(model: Model, centralization: AbstractConstraint, identifier: int) -> list:
+    solution_set = []
+    solution = model.solve()
+
+    if model.get_solve_details().status_code not in Constants.OPTIMAL_CODES:
+        return []
+
+    new_pareto = Pareto(iteration=identifier,
+                        power_consumption=solution.get_objective_value(),
+                        centralization=solution.get_value(centralization.left_expr),
+                        solution=[key for key in model.x if model.x[key].solution_value != 0])
+
+    solution_set.append(new_pareto)
+    return solution_set
