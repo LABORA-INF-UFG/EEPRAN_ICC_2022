@@ -28,3 +28,21 @@ type H1; (iii) Only H2, where all CRs in the topology are of type H2; (iv) H1 Ro
 The detailed steps performed for the evaluation can be found in the notebooks:
 - [01_model.ipynb](01_model.ipynb) - the model is used find the solutions for each topology and setting
 - [02_analysis.ipynb](02_analysis.ipynb) - provides a set of charts for a better visualization of the solutions
+
+## EEP-RAN IEEE ICC 2022 Paper
+
+More information can be found on [EEP-RAN IEEE ICC 2022 Paper](https://ieeexplore.ieee.org/document/9838898)
+
+### Citation
+```
+@INPROCEEDINGS{pires:22,  
+  author={Pires, William and de Almeida, Gabriel and Correa, Sand and Both, Cristiano and Pinto, Leizer and Cardoso, Kleber},  
+  booktitle={ICC 2022 - IEEE International Conference on Communications},   
+  title={Bi-objective Optimization for Energy Efficiency and Centralization Level in Virtualized RAN},   
+  year={2022},  
+  volume={},  
+  number={},  
+  pages={1034-1039},  
+  doi={10.1109/ICC45855.2022.9838898}
+}
+```
