@@ -31,7 +31,7 @@ The detailed steps performed for the evaluation can be found in the notebooks:
 
 ## EEP-RAN IEEE ICC 2022 Paper
 
-More information can be found on [EEP-RAN IEEE ICC 2022 Paper](https://ieeexplore.ieee.org/document/9838898).
+More information can be found in [EEP-RAN IEEE ICC 2022 Paper](https://ieeexplore.ieee.org/document/9838898).
 
 ### Citation
 ```
